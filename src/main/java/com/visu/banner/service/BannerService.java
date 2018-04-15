@@ -7,6 +7,7 @@ import java.util.List;
 public interface BannerService {
 
     List<Banner> get(int count);
-    void add(Banner banner);
+
+    boolean add(Banner banner);
 
 }

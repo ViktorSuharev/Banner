@@ -4,6 +4,8 @@ public class Banner {
     private long id;
     private int weight;
 
+    public Banner() {}
+
     public Banner(long id, int weight) {
         this.id = id;
         this.weight = weight;
