@@ -1,10 +1,29 @@
 package com.visu.banner.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "banners")
 public class Banner {
+
+    @Id
+    @Column
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
+
+    @Column(name="weight")
     private int weight;
 
     public Banner() {}
+
+    public Banner(int weight) {
+        this.weight = weight;
+    }
 
     public Banner(long id, int weight) {
         this.id = id;

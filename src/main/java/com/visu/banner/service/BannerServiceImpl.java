@@ -1,20 +1,22 @@
 package com.visu.banner.service;
 
+import com.visu.banner.dao.BannerDao;
 import com.visu.banner.model.Banner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
+@Transactional
 public class BannerServiceImpl implements BannerService {
 
-    private final List<Banner> banners = new ArrayList<>();
-
-    private final AtomicLong idCounter = new AtomicLong(1L);
+    @Autowired
+    private BannerDao bannerDao;
 
     @Override
     public List<Banner> get(int count) {
@@ -22,11 +24,12 @@ public class BannerServiceImpl implements BannerService {
             return Collections.emptyList();
         }
 
+        List<Banner> banners = bannerDao.getAll();
         if ((banners.size() < count)) {
             return banners;
         }
 
-        int allWeight = getSumWeight();
+        int allWeight = getSumWeight(banners);
         int extractedWeight = 0;
         List<Banner> extractedBanners = new ArrayList<>();
         for (int i = 0; i < count; ++i) {
@@ -53,14 +56,12 @@ public class BannerServiceImpl implements BannerService {
             return null;
         }
 
-        Banner banner = new Banner(idCounter.getAndIncrement(), weight);
-        banners.add(banner);
-        return banner;
+        return bannerDao.add(weight);
     }
 
     @Override
     public boolean delete(long id) {
-        return banners.removeIf(k -> k.getId() == id);
+        return bannerDao.delete(id);
     }
 
     /**
@@ -69,10 +70,6 @@ public class BannerServiceImpl implements BannerService {
     private int getUniformRandomNum(int bound) {
         Random rand = new Random();
         return rand.nextInt(bound);
-    }
-
-    private int getSumWeight() {
-        return getSumWeight(banners);
     }
 
     private int getSumWeight(List<Banner> banners) {
