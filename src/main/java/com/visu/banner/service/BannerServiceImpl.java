@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 @Service
-@Transactional
 public class BannerServiceImpl implements BannerService {
 
     @Autowired
@@ -21,10 +19,10 @@ public class BannerServiceImpl implements BannerService {
     @Override
     public List<Banner> get(int count) {
         if (count <= 0) {
-            return Collections.emptyList();
+            return null;
         }
 
-        List<Banner> banners = bannerDao.getAll();
+        List<Banner> banners = getAll();
         if ((banners.size() < count)) {
             return banners;
         }
@@ -51,6 +49,7 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
+    @Transactional
     public Banner add(int weight) {
         if (weight <= 0) {
             return null;
@@ -60,8 +59,14 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
+    @Transactional
     public boolean delete(long id) {
         return bannerDao.delete(id);
+    }
+
+    @Transactional
+    public List<Banner> getAll() {
+        return bannerDao.getAll();
     }
 
     /**

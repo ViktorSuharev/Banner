@@ -81,6 +81,16 @@ public class BannerControllerTest {
     }
 
     @Test
+    public void testGet_countNotPositive() throws Exception {
+        given(bannerService.get(-1)).willReturn(null);
+
+        mvc.perform(get("/banners")
+                .param("count", "-1"))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
     public void testAdd() throws Exception {
         Banner banner = new Banner(1L, 1);
         given(bannerService.add(1)).willReturn(banner);

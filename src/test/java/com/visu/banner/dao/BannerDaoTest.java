@@ -42,7 +42,6 @@ public class BannerDaoTest {
 
     @After
     public void tearDown() throws SQLException {
-        statement.executeUpdate(TestQuery.DELETE_ALL_ROWS);
         statement.close();
         connection.close();
     }
@@ -81,7 +80,7 @@ public class BannerDaoTest {
     @Transactional
     public void testDelete() {
         int bannerCount = bannerDao.getAll().size();
-        boolean result = bannerDao.delete(101L);
+        boolean result = bannerDao.delete(103L);
         Assert.assertTrue("Deletion was not successful", result);
         Assert.assertEquals(bannerCount - 1, bannerDao.getAll().size());
     }

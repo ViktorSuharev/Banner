@@ -1,39 +1,46 @@
 package com.visu.banner.service;
 
+import com.visu.banner.dao.BannerDao;
+import com.visu.banner.dao.util.TestUtil;
 import com.visu.banner.model.Banner;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.Mockito.when;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class BannerServiceTest {
 
+    @Autowired
     private BannerService bannerService;
 
-    @Before
-    public void setUp() {
-        bannerService = new BannerServiceImpl();
-    }
+    @MockBean
+    private BannerDao bannerDao;
 
     @Test
     public void testGetBanners() {
-        bannerService.add(1);
-        bannerService.add(1);
-        bannerService.add(2);
-        bannerService.add(4);
-
+        when(bannerDao.getAll()).thenReturn(Arrays.asList(TestUtil.TEST_BANNER_1, TestUtil.TEST_BANNER_2));
         List<Banner> extracted = bannerService.get(2);
+
         Assert.assertEquals(2, extracted.size());
         Assert.assertNotEquals(extracted.get(0), extracted.get(1));
     }
 
     @Test
     public void testGetBanners_countMoreThanSize() {
-        bannerService.add(1);
-        bannerService.add(1);
-
+        when(bannerDao.getAll()).thenReturn(Arrays.asList(TestUtil.TEST_BANNER_1, TestUtil.TEST_BANNER_2));
         List<Banner> extracted = bannerService.get(4);
+
         Assert.assertEquals(2, extracted.size());
         Assert.assertNotEquals(extracted.get(0), extracted.get(1));
     }
@@ -41,64 +48,56 @@ public class BannerServiceTest {
     @Test
     public void testGetBanners_zeroCount() {
         List<Banner> extracted = bannerService.get(0);
-        Assert.assertTrue(extracted.isEmpty());
+        Assert.assertNull(extracted);
     }
 
     @Test
     public void testGetBanners_negativeCount() {
         List<Banner> extracted = bannerService.get(0);
-        Assert.assertTrue(extracted.isEmpty());
+        Assert.assertNull(extracted);
     }
 
     @Test
     public void testGetBanners_sizeIsNull() {
+        when(bannerDao.getAll()).thenReturn(Collections.emptyList());
         List<Banner> extracted = bannerService.get(4);
+
         Assert.assertTrue(extracted.isEmpty());
     }
 
     @Test
     public void testAddBanner() {
-        Assert.assertEquals(0, bannerService.get(1).size());
+        when(bannerDao.add(1)).thenReturn(TestUtil.TEST_BANNER_1);
         Banner banner = bannerService.add(1);
-        Assert.assertNotNull(banner);
-        Assert.assertEquals(1, bannerService.get(1).size());
+
+        Assert.assertEquals(1, banner.getWeight());
     }
 
     @Test
     public void testAddBanner_zeroWeight() {
-        Assert.assertEquals(0, bannerService.get(1).size());
         Banner banner = bannerService.add(0);
         Assert.assertNull(banner);
-        Assert.assertEquals(0, bannerService.get(1).size());
     }
 
     @Test
     public void testAddBanner_negativeWeight() {
-        Assert.assertEquals(0, bannerService.get(1).size());
         Banner banner = bannerService.add(-1);
         Assert.assertNull(banner);
-        Assert.assertEquals(0, bannerService.get(1).size());
     }
 
     @Test
     public void testDeleteBanner() {
-        Banner banner = bannerService.add(1);
+        when(bannerDao.delete(100L)).thenReturn(true);
+        boolean isDeleted = bannerService.delete(100L);
 
-        Assert.assertEquals(1, bannerService.get(1).size());
-        boolean isDeleted = bannerService.delete(banner.getId());
         Assert.assertEquals(true, isDeleted);
-
-        Assert.assertEquals(0, bannerService.get(1).size());
     }
 
     @Test
     public void testDeleteBanner_bannerNonExistent() {
-        bannerService.add(1);
+        when(bannerDao.delete(1000L)).thenReturn(false);
+        boolean isDeleted = bannerService.delete(1000L);
 
-        Assert.assertEquals(1, bannerService.get(1).size());
-        boolean isDeleted = bannerService.delete(100L);
         Assert.assertEquals(false, isDeleted);
-
-        Assert.assertEquals(1, bannerService.get(1).size());
     }
 }
