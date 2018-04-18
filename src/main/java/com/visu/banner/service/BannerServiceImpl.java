@@ -4,6 +4,7 @@ import com.visu.banner.model.Banner;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -17,17 +18,29 @@ public class BannerServiceImpl implements BannerService {
 
     @Override
     public List<Banner> get(int count) {
-        if (banners.isEmpty()) {
+        if (count <= 0) {
+            return Collections.emptyList();
+        }
+
+        if ((banners.size() < count)) {
             return banners;
         }
 
+        int allWeight = getSumWeight();
+        int extractedWeight = 0;
         List<Banner> extractedBanners = new ArrayList<>();
-        int weight = getSumWeight();
         for (int i = 0; i < count; ++i) {
-            int intLength = weight - getSumWeight(extractedBanners);
-            if (intLength > 0) {
-                Banner banner = resolveBanner(extractedBanners, intLength);
-                extractedBanners.add(banner);
+            int randomNum = getUniformRandomNum(allWeight - extractedWeight);
+            int thresholdWeight = 0;
+            for (Banner banner : banners) {
+                if (!extractedBanners.contains(banner)) {
+                    thresholdWeight = thresholdWeight + banner.getWeight();
+                    if (thresholdWeight > randomNum) {
+                        extractedBanners.add(banner);
+                        extractedWeight = extractedWeight + banner.getWeight();
+                        break;
+                    }
+                }
             }
         }
 
@@ -35,29 +48,27 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
-    public boolean add(Banner banner) {
-        banner.setId(idCounter.getAndIncrement());
-        return banners.add(banner);
-    }
-
-    private Banner resolveBanner(List<Banner> extracted, int intLength) {
-        int randomNum = getRandomNum(intLength);
-        int thresholdWeigh = 0;
-        for (Banner banner : banners) {
-            if (!extracted.contains(banner)) {
-                thresholdWeigh = thresholdWeigh + banner.getWeight();
-                if (thresholdWeigh > randomNum) {
-                    return banner;
-                }
-            }
+    public Banner add(int weight) {
+        if (weight <= 0) {
+            return null;
         }
 
-        return null;
+        Banner banner = new Banner(idCounter.getAndIncrement(), weight);
+        banners.add(banner);
+        return banner;
     }
 
-    private int getRandomNum(int length) {
+    @Override
+    public boolean delete(long id) {
+        return banners.removeIf(k -> k.getId() == id);
+    }
+
+    /**
+     * generates random number from [0, bound - 1] according to uniform distribution
+     */
+    private int getUniformRandomNum(int bound) {
         Random rand = new Random();
-        return rand.nextInt(length);
+        return rand.nextInt(bound);
     }
 
     private int getSumWeight() {
@@ -65,7 +76,9 @@ public class BannerServiceImpl implements BannerService {
     }
 
     private int getSumWeight(List<Banner> banners) {
-        return banners.stream().mapToInt(Banner::getWeight).sum();
+        return banners.stream()
+                .mapToInt(Banner::getWeight)
+                .sum();
     }
 
 }
