@@ -17,9 +17,9 @@ import java.util.List;
 @RestController
 public class BannerController {
 
-    public static final String COUNT_SHOULD_BE_POSITIVE = "Count should be positive";
-    public static final String WEIGHT_SHOULD_BE_POSITIVE = "Weight should be positive";
-    public static final String BANNER_WITH_ID_NOT_EXIST = "Banner with specified id does not exist";
+    private static final String COUNT_SHOULD_BE_POSITIVE = "Count should be positive";
+    private static final String WEIGHT_SHOULD_BE_POSITIVE = "Weight should be positive";
+    private static final String BANNER_WITH_ID_NOT_EXIST = "Banner with specified id does not exist";
 
     @Autowired
     private BannerService bannerService;
