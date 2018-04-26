@@ -46,18 +46,6 @@ public class BannerServiceTest {
     }
 
     @Test
-    public void testGetBanners_zeroCount() {
-        List<Banner> extracted = bannerService.get(0);
-        Assert.assertNull(extracted);
-    }
-
-    @Test
-    public void testGetBanners_negativeCount() {
-        List<Banner> extracted = bannerService.get(0);
-        Assert.assertNull(extracted);
-    }
-
-    @Test
     public void testGetBanners_sizeIsNull() {
         when(bannerDao.getAll()).thenReturn(Collections.emptyList());
         List<Banner> extracted = bannerService.get(4);
@@ -71,18 +59,6 @@ public class BannerServiceTest {
         Banner banner = bannerService.add(1);
 
         Assert.assertEquals(1, banner.getWeight());
-    }
-
-    @Test
-    public void testAddBanner_zeroWeight() {
-        Banner banner = bannerService.add(0);
-        Assert.assertNull(banner);
-    }
-
-    @Test
-    public void testAddBanner_negativeWeight() {
-        Banner banner = bannerService.add(-1);
-        Assert.assertNull(banner);
     }
 
     @Test

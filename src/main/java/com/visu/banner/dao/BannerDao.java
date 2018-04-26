@@ -10,7 +10,5 @@ public interface BannerDao {
 
     boolean delete(long id);
 
-    Banner getById(long id);
-
     List<Banner> getAll();
 }

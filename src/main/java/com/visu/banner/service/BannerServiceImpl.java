@@ -18,29 +18,26 @@ public class BannerServiceImpl implements BannerService {
 
     @Override
     public List<Banner> get(int count) {
-        if (count <= 0) {
-            return null;
-        }
-
         List<Banner> banners = getAll();
         if ((banners.size() < count)) {
             return banners;
         }
 
-        int allWeight = getSumWeight(banners);
-        int extractedWeight = 0;
+        int currentSumWeight = getSumWeight(banners);
         List<Banner> extractedBanners = new ArrayList<>();
         for (int i = 0; i < count; ++i) {
-            int randomNum = getUniformRandomNum(allWeight - extractedWeight);
             int thresholdWeight = 0;
+            int randomNum = getUniformRandomNum(currentSumWeight);
             for (Banner banner : banners) {
-                if (!extractedBanners.contains(banner)) {
-                    thresholdWeight = thresholdWeight + banner.getWeight();
-                    if (thresholdWeight > randomNum) {
-                        extractedBanners.add(banner);
-                        extractedWeight = extractedWeight + banner.getWeight();
-                        break;
-                    }
+                if (extractedBanners.contains(banner)) {
+                    continue;
+                }
+
+                thresholdWeight = thresholdWeight + banner.getWeight();
+                if (thresholdWeight > randomNum) {
+                    extractedBanners.add(banner);
+                    currentSumWeight = currentSumWeight - banner.getWeight();
+                    break;
                 }
             }
         }
@@ -51,10 +48,6 @@ public class BannerServiceImpl implements BannerService {
     @Override
     @Transactional
     public Banner add(int weight) {
-        if (weight <= 0) {
-            return null;
-        }
-
         return bannerDao.add(weight);
     }
 

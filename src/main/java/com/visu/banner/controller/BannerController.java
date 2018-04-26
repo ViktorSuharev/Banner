@@ -1,6 +1,5 @@
 package com.visu.banner.controller;
 
-import com.visu.banner.controller.dto.BannerDto;
 import com.visu.banner.model.Banner;
 import com.visu.banner.service.BannerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,22 +25,22 @@ public class BannerController {
 
     @RequestMapping(value = "/banners", method = RequestMethod.GET)
     public ResponseEntity<?> get(@RequestParam(value = "count") int count) {
-        List<Banner> banners = bannerService.get(count);
-        if (banners == null) {
+        if (count <= 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(COUNT_SHOULD_BE_POSITIVE);
-        } else {
-            return banners.isEmpty() ?
-                    ResponseEntity.noContent().build() :
-                    ResponseEntity.ok(banners);
         }
+
+        List<Banner> banners = bannerService.get(count);
+        return ResponseEntity.ok(banners);
     }
 
     @RequestMapping(value = "/banners", method = RequestMethod.POST)
     public ResponseEntity add(@RequestParam(value = "weight") int weight ) {
+        if (weight <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(WEIGHT_SHOULD_BE_POSITIVE);
+        }
+
         Banner banner = bannerService.add(weight);
-        return banner != null ?
-                ResponseEntity.ok(new BannerDto(banner)) :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).body(WEIGHT_SHOULD_BE_POSITIVE);
+        return ResponseEntity.ok(banner);
     }
 
     @RequestMapping(value = "/banners/{id}", method = RequestMethod.DELETE)

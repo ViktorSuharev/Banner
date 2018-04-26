@@ -76,13 +76,13 @@ public class BannerControllerTest {
 
         mvc.perform(get("/banners")
                 .param("count", "1"))
-                .andExpect(status().isNoContent())
+                .andExpect(status().isOk())
                 .andReturn();
     }
 
     @Test
     public void testGet_countNotPositive() throws Exception {
-        given(bannerService.get(-1)).willReturn(null);
+        given(bannerService.get(-1)).willReturn(Collections.emptyList());
 
         mvc.perform(get("/banners")
                 .param("count", "-1"))
@@ -100,7 +100,7 @@ public class BannerControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expected = "{\"banner\":{\"id\":1,\"weight\":1}}";
+        String expected = "{\"id\":1,\"weight\":1}";
         Assert.assertEquals(expected, result.getResponse().getContentAsString());
     }
 

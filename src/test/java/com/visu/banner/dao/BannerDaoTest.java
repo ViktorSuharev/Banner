@@ -47,20 +47,6 @@ public class BannerDaoTest {
     }
 
     @Test
-    public void testGetById() {
-        Banner banner = bannerDao.getById(101L);
-        Assert.assertNotNull("There is no banners with specified id", banner);
-
-        Assert.assertEquals(TestUtil.TEST_BANNER_1, banner);
-    }
-
-    @Test
-    public void testGetById_nonExistent() {
-        Banner banner = bannerDao.getById(100L);
-        Assert.assertNull("There is some banners with specified id", banner);
-    }
-
-    @Test
     public void testGetAll() {
         List<Banner> banners = bannerDao.getAll();
         Assert.assertEquals("There are not 3 banners configured", 3, banners.size());
